@@ -5,13 +5,25 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Requests\CreateTagRequest;
+use App\Http\Requests\UpdateTagRequest;
+
 use App\Actions\Tag\CreateNewTag;
+use App\Actions\Tag\UpdateTag;
+use App\Actions\Tag\DeleteTag;
 class TagController extends Controller
 {
     protected $createNewTag;
-    public function __construct(CreateNewTag $createNewTag)
+    protected $updateTag;
+
+    public function __construct(
+        CreateNewTag $createNewTag,
+        UpdateTag $updateTag,
+        DeleteTag $deleteTag
+        )
     {
         $this->createNewTag = $createNewTag;
+        $this->updateTag = $updateTag;
+        $this->deleteTag = $deleteTag;
     }
     /**
      * Display a listing of the resource.
@@ -62,9 +74,18 @@ class TagController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateTagRequest $request, string $id)
     {
-        //
+        try {
+            return response()->json([
+                'status' => 'success',
+                'data' => $this->updateTag->handle($request->validated(), $id)
+            ]);
+        } catch (HttpResponseException $e) {
+            return $e->getResponse();
+        } catch(\Exception $e) {
+            report($e);
+        }
     }
 
     /**
@@ -72,6 +93,15 @@ class TagController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            return response()->json([
+                'status' => 'success',
+                'data' => $this->deleteTag->handle($id)
+            ]);
+        } catch (HttpResponseException $e) {
+            return $e->getResponse();
+        } catch(\Exception $e) {
+            report($e);
+        }
     }
 }

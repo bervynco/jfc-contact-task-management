@@ -11,7 +11,7 @@ class Business extends Model
     protected $table = 'businesses';
     protected $fillable = [
         'name',
-        'contact_email'
+        'email'
     ];
 
 }

@@ -10,21 +10,24 @@ use App\Http\Requests\UpdateCategoryRequest;
 use App\Actions\Category\CreateNewCategory;
 use App\Actions\Category\UpdateCategory;
 use App\Actions\Category\DeleteCategory;
-
+use App\Actions\Category\GetAllCategory;
 class CategoryController extends Controller
 {
     protected $createNewCategory;
     protected $updateCategory;
-    protected $cdeleteCategory;
+    protected $deleteCategory;
+    protected $getAllCategory;
     public function __construct(
         CreateNewCategory $createNewCategory,
         UpdateCategory $updateCategory,
-        DeleteCategory $deleteCategory
+        DeleteCategory $deleteCategory,
+        GetAllCategory $getAllCategory
         )
     {
         $this->createNewCategory = $createNewCategory;
         $this->updateCategory = $updateCategory;
         $this->deleteCategory = $deleteCategory;
+        $this->getAllCategory = $getAllCategory;
     }
 
     /**
@@ -32,7 +35,13 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            return response()->json($this->getAllCategory->handle()); 
+        } catch (HttpResponseException $e) {
+            return $e->getResponse();
+        } catch(\Exception $e) {
+            report($e);
+        }
     }
 
     /**

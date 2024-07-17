@@ -7,8 +7,10 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 use App\Http\Requests\CreateNewBusinessRequest;
+use App\Http\Requests\UpdateBusinessRequest;
 
 use App\Actions\Business\CreateNewBusiness;
+use App\Actions\Business\UpdateBusiness;
 use App\Actions\TagMapping\CreateTagMapping;
 use App\Actions\CategoryMapping\CreateCategoryMapping;
 
@@ -16,15 +18,19 @@ class BusinessController extends Controller
 {
     protected $createTagMapping;
     protected $createNewBusiness;
+    protected $createCategoryMapping;
+    protected $updateBusiness;
     public function __construct(
         CreateTagMapping $createTagMapping,
         CreateNewBusiness $createNewBusiness,
-        CreateCategoryMapping $createCategoryMapping
+        CreateCategoryMapping $createCategoryMapping,
+        UpdateBusiness $updateBusiness
         )
     {
         $this->createTagMapping = $createTagMapping;
         $this->createNewBusiness = $createNewBusiness;
         $this->createCategoryMapping = $createCategoryMapping;
+        $this->updateBusiness = $updateBusiness;
     }
     /**
      * Display a listing of the resource.
@@ -47,6 +53,7 @@ class BusinessController extends Controller
      */
     public function store(CreateNewBusinessRequest $request)
     {
+        DB::beginTransaction();
         try {
             $requestData = $request->validated();
             $tags = $request['tags'] ?? [];
@@ -54,7 +61,7 @@ class BusinessController extends Controller
             unset($requestData['tags']);
             unset($requestData['categories']);
             $business = $requestData;
-            $businessId = $this->createNewBusiness->handle($requestData);
+            $businessId = $this->createNewBusiness->handle($business);
 
             $requestTags = array_map(function($tag) use ($businessId) {
                 return [
@@ -108,9 +115,49 @@ class BusinessController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateBusinessRequest $request, string $id)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $requestData = $request->validated();
+            $tags = $request['tags'] ?? [];
+            $categories = $request['categories'] ?? [];
+            unset($requestData['tags']);
+            unset($requestData['categories']);
+            $business = $requestData;
+            $this->updateBusiness->handle($business, $id);
+
+            // $requestTags = array_map(function($tag) use ($businessId) {
+            //     return [
+            //         'tags_id' => $tag,
+            //         'business_id' => $businessId,
+            //         'created_at' => Carbon::now(),
+            //         'updated_at' => Carbon::now()
+            //     ];
+            // }, $tags);
+
+            // $requestCategories = array_map(function($category) use ($businessId) {
+            //     return [
+            //         'category_id' => $category,
+            //         'business_id' => $businessId,
+            //         'created_at' => Carbon::now(),
+            //         'updated_at' => Carbon::now()
+            //     ];
+            // }, $categories);
+            
+            // $this->createTagMapping->handle($requestTags);
+            // $this->createCategoryMapping->handle($requestCategories);
+
+            DB::commit();
+            return response()->json(['status' => 'success', 'message' => 'Business updated successfully'], 200);
+        } catch (HttpResponseException $e) {
+            DB::rollBack();
+            return $e->getResponse();
+        } catch(\Exception $e) {
+            DB::rollBack();
+            report($e);
+            return response()->json(['status' => 'error', 'message' => 'An error occurred while updating the business'], 500);
+        }
     }
 
     /**

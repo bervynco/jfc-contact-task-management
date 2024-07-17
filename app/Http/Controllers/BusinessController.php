@@ -3,11 +3,29 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+
+use App\Http\Requests\CreateNewBusinessRequest;
 
 use App\Actions\Business\CreateNewBusiness;
+use App\Actions\TagMapping\CreateTagMapping;
+use App\Actions\CategoryMapping\CreateCategoryMapping;
 
 class BusinessController extends Controller
 {
+    protected $createTagMapping;
+    protected $createNewBusiness;
+    public function __construct(
+        CreateTagMapping $createTagMapping,
+        CreateNewBusiness $createNewBusiness,
+        CreateCategoryMapping $createCategoryMapping
+        )
+    {
+        $this->createTagMapping = $createTagMapping;
+        $this->createNewBusiness = $createNewBusiness;
+        $this->createCategoryMapping = $createCategoryMapping;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -27,24 +45,48 @@ class BusinessController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateNewBusinessRequest $request, CreateNewBusiness $createNewBusiness)
+    public function store(CreateNewBusinessRequest $request)
     {
-        $requestData = $request->validated();
-        $tags = $request['tags'];
-        $categories = $request['categories'];
-        unset($requestData['tags']);
-        unset($requestData['categories']);
-        $business = $requestData;
-        $id = $createNewBusiness->handle($requestData);
-        foreach($tags as $index => $tag) {
-            $tag['business_id'] = $id;
-        }
+        try {
+            $requestData = $request->validated();
+            $tags = $request['tags'] ?? [];
+            $categories = $request['categories'] ?? [];
+            unset($requestData['tags']);
+            unset($requestData['categories']);
+            $business = $requestData;
+            $businessId = $this->createNewBusiness->handle($requestData);
 
-        foreach($categories as $index => $category) {
-            $category['business_id'] = $id;
+            $requestTags = array_map(function($tag) use ($businessId) {
+                return [
+                    'tags_id' => $tag,
+                    'business_id' => $businessId,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ];
+            }, $tags);
+
+            $requestCategories = array_map(function($category) use ($businessId) {
+                return [
+                    'category_id' => $category,
+                    'business_id' => $businessId,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ];
+            }, $categories);
+            
+            $this->createTagMapping->handle($requestTags);
+            $this->createCategoryMapping->handle($requestCategories);
+
+            DB::commit();
+            return response()->json(['status' => 'success', 'message' => 'Business created successfully'], 200);
+        } catch (HttpResponseException $e) {
+            DB::rollBack();
+            return $e->getResponse();
+        } catch(\Exception $e) {
+            DB::rollBack();
+            report($e);
+            return response()->json(['status' => 'error', 'message' => 'An error occurred while creating the business'], 500);
         }
-        $createNewTagMapping->handle($tags);
-        $createNewCategoriesMapping->handle($categories);
     }
 
     /**

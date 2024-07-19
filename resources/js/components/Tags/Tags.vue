@@ -71,8 +71,23 @@
 			editTag(id) {
 				this.$router.push(`/tags/${id}/edit`);
 			},
-			deleteTag() {
+			async deleteTag(id) {
+				try {
+                    const response = await fetch(`/api/tag/${id}`, {
+						method: 'DELETE',
+						headers: {
+							'Content-Type': 'application/json',
+							'Accept': 'application/json',
+					}});
 
+                    if (!response.ok) {
+                        throw new Error('Unable to delete tag');
+                    }
+                    
+                    this.getAllTags();
+                } catch (error) {
+                    console.error('There was an error deleteing a tag!', error);
+                }
 			}
 
 		}

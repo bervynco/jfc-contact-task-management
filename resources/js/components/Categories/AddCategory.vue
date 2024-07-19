@@ -25,9 +25,28 @@
             };
         },
         methods: {
-            submitForm() {
-                
-                alert('Form submitted');
+            async submitForm() {
+                const formData = {
+                    'name': this.name
+                };
+                try {
+                    const response = await fetch('/api/category', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                        body: JSON.stringify(formData),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Unable to add category');
+                    }
+                    
+                    this.$router.push('/categories');
+                } catch (error) {
+                    console.error('There was an error adding a category!', error);
+                }
             },
             cancel() {
                 this.$router.push('/categories');

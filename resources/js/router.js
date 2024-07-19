@@ -48,7 +48,8 @@ const routes = [
     },
     { 
         path: '/tags/:id/edit',
-         component: EditTag 
+         component: EditTag,
+         props: true 
     },
     { 
         path: '/categories', 
@@ -60,7 +61,8 @@ const routes = [
     },
     { 
         path: '/categories/:id/edit',
-         component: EditCategory 
+        component: EditCategory,
+        props: true 
     },
     { 
         path: '/login', 

@@ -25,9 +25,28 @@
             };
         },
         methods: {
-            submitForm() {
-                
-                alert('Form submitted');
+            async submitForm() {
+                const formData = {
+                    'name': this.name
+                };
+                try {
+                    const response = await fetch('/api/tag', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                        body: JSON.stringify(formData),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Unable to add tag');
+                    }
+                    
+                    this.$router.push('/tags');
+                } catch (error) {
+                    console.error('There was an error adding a tag!', error);
+                }
             },
             cancel() {
                 this.$router.push('/tags');

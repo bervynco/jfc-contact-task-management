@@ -68,6 +68,27 @@
 				} catch (error) {
 					console.error('Unable to pull categories:', error);
 				}
+			},
+			editCategory(id) {
+				this.$router.push(`/categories/${id}/edit`);
+			},
+			async deleteCategory(id) {
+				try {
+                    const response = await fetch(`/api/category/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    }});
+
+                    if (!response.ok) {
+                        throw new Error('Unable to delete category');
+                    }
+                    
+                    this.getAllCategories();
+                } catch (error) {
+                    console.error('There was an error deleteing a category!', error);
+                }
 			}
 		}
 	};

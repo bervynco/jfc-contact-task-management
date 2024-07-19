@@ -12,14 +12,19 @@
 				<table class="min-w-full bg-white">
 				<thead>
 					<tr>
-					<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600">ID</th>
-					<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600">Name</th>
+						<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600">ID</th>
+						<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600">Name</th>
+						<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600"></th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="category in filteredCategories" :key="category.id">
-					<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ category.id }}</td>
-					<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ category.name }}</td>
+						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ category.id }}</td>
+						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ category.name }}</td>
+						<td class="py-2 px-4 border-b border-gray-300 flex justify-end space-x-2">
+							<button @click="editCategory(category.id)" class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600 transition duration-150 ease-in-out">Edit</button>
+							<button @click="deleteCategory(category.id)" class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 focus:outline-none focus:bg-red-600 transition duration-150 ease-in-out">Delete</button>
+						</td>
 					</tr>
 				</tbody>
 				</table>
@@ -28,30 +33,42 @@
 	</div>
 </template>
 <script>
-export default {
-    name: "Categories",
-    data() {
-		return {
-			searchQuery: '',
-			categories: [
-				{ id: 1, name: 'Business 1' },
-				{ id: 2, name: 'Business 2' },
-				{ id: 3, name: 'Business 3' },
-			],
-		};
-    },
-    computed: {
-		filteredCategories() {
-			return this.categories.filter(category =>
-				category.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-			);
+	export default {
+		
+		name: "Categories",
+		data() {
+			return {
+				searchQuery: '',
+				categories: [],
+			};
 		},
-    },
-    methods: {
-		addCategory() {
-			// Add your logic to handle adding a new business here
-			alert('Add Business button clicked');
+		computed: {
+			filteredCategories() {
+				return this.categories.filter(category =>
+					category.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+				);
+			},
 		},
-    },
-};
+		mounted() {
+			this.getAllCategories();
+		},
+		methods: {
+			addCategory() {
+				this.$router.push(`/categories/add`);
+			},
+			async getAllCategories() {
+				try {
+					const response = await fetch('/api/category');
+					if (response.ok) {
+						const data = await response.json();
+						this.categories = data;
+					}
+					throw new Error('Unable to pull categories');
+					
+				} catch (error) {
+					console.error('Unable to pull categories:', error);
+				}
+			}
+		}
+	};
 </script>

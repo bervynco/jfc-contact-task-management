@@ -5,21 +5,26 @@
 				<h2 class="text-3xl font-bold text-[#cf2e2e]">Tags</h2>
 				<div class="flex items-center">
 					<input type="text" v-model="searchQuery" placeholder="Filter tag..." class="w-48 mr-4 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-[#cf2e2e]">
-					<button @click="addTags" class="bg-[#cf2e2e] text-white py-2 px-4 rounded-md hover:bg-red-600 focus:outline-none focus:bg-red-600 transition duration-150 ease-in-out">Add Tag</button>
+					<button @click="addTag" class="bg-[#cf2e2e] text-white py-2 px-4 rounded-md hover:bg-red-600 focus:outline-none focus:bg-red-600 transition duration-150 ease-in-out">Add Tag</button>
 				</div>
 			</div>
 			<div class="overflow-x-auto">
 				<table class="min-w-full bg-white">
 				<thead>
 					<tr>
-					<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600">ID</th>
-					<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600">Name</th>
+						<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600">ID</th>
+						<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600">Name</th>
+						<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600"></th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="tag in filteredTags" :key="tag.id">
-					<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ tag.id }}</td>
-					<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ tag.name }}</td>
+						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ tag.id }}</td>
+						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ tag.name }}</td>
+						<td class="py-2 px-4 border-b border-gray-300 flex justify-end space-x-2">
+							<button @click="editTag(tag.id)" class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600 transition duration-150 ease-in-out">Edit</button>
+							<button @click="deleteTag(tag.id)" class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 focus:outline-none focus:bg-red-600 transition duration-150 ease-in-out">Delete</button>
+						</td>
 					</tr>
 				</tbody>
 				</table>
@@ -33,11 +38,7 @@
 		data() {
 			return {
 				searchQuery: '',
-				tags: [
-					{ id: 1, name: 'Business 1' },
-					{ id: 2, name: 'Business 2' },
-					{ id: 3, name: 'Business 3' },
-				],
+				tags: [],
 			};
 		},
 		computed: {
@@ -47,11 +48,33 @@
 				);
 			},
 		},
+		mounted() {
+			this.getAllTags();
+		},
 		methods: {
 			addTag() {
-				// Add your logic to handle adding a new business here
-				alert('Add Business button clicked');
+				this.$router.push(`/tags/add`);
 			},
-		},
+			async getAllTags() {
+				try {
+					const response = await fetch('/api/tag');
+					if (response.ok) {
+						const data = await response.json();
+						this.tags = data;
+					}
+					throw new Error('Unable to pull tags');
+					
+				} catch (error) {
+					console.error('Unable to pull tags:', error);
+				}
+			},
+			editTag(id) {
+				this.$router.push(`/tags/${id}/edit`);
+			},
+			deleteTag() {
+
+			}
+
+		}
 	};
 </script>

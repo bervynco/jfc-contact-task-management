@@ -49,9 +49,11 @@
 		},
 		methods: {
 			addPeople() {
-				// Add your logic to handle adding a new business here
-				alert('Add Business button clicked');
+				this.$router.push(`/people/add`);
 			},
 		},
+		mounted() {
+			
+		}
 	};
 </script>

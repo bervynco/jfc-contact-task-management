@@ -11,6 +11,7 @@ use App\Actions\Tag\CreateNewTag;
 use App\Actions\Tag\UpdateTag;
 use App\Actions\Tag\DeleteTag;
 use App\Actions\Tag\GetAllTag;
+use App\Actions\Tag\GetTag;
 
 class TagController extends Controller
 {
@@ -18,17 +19,20 @@ class TagController extends Controller
     protected $updateTag;
     protected $deleteTag;
     protected $getAllTag;
+    protected $getTag;
     public function __construct(
         CreateNewTag $createNewTag,
         UpdateTag $updateTag,
         DeleteTag $deleteTag,
-        GetAllTag $getAllTag
+        GetAllTag $getAllTag,
+        GetTag $getTag
         )
     {
         $this->createNewTag = $createNewTag;
         $this->updateTag = $updateTag;
         $this->deleteTag = $deleteTag;
         $this->getAllTag = $getAllTag;
+        $this->getTag = $getTag;
     }
     /**
      * Display a listing of the resource.
@@ -71,7 +75,13 @@ class TagController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            return response()->json($this->getTag->handle($id)); 
+        } catch (HttpResponseException $e) {
+            return $e->getResponse();
+        } catch(\Exception $e) {
+            report($e);
+        }
     }
 
     /**

@@ -14,6 +14,9 @@
 					<tr>
 						<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600">ID</th>
 						<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600">Name</th>
+						<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600">Contact Email</th>
+						<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600">Tags</th>
+						<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600">Categories</th>
 						<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600"></th>
 					</tr>
 				</thead>
@@ -21,6 +24,9 @@
 					<tr v-for="business in filteredBusinesses" :key="business.id">
 						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ business.id }}</td>
 						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ business.name }}</td>
+						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ business.email }}</td>
+						<td class="py-2 px-4 border-b border-gray-300 text-sm"></td>
+						<td class="py-2 px-4 border-b border-gray-300 text-sm"></td>
 						<td class="py-2 px-4 border-b border-gray-300 flex justify-end space-x-2">
 							<button @click="editBusiness(business.id)" class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600 transition duration-150 ease-in-out">Edit</button>
 							<button @click="deleteBusiness(business.id)" class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 focus:outline-none focus:bg-red-600 transition duration-150 ease-in-out">Delete</button>
@@ -37,12 +43,7 @@ export default {
 	data() {
 		return {
 		searchQuery: '',
-		businesses: [
-			{ id: 1, name: 'Business 1' },
-			{ id: 2, name: 'Business 2' },
-			{ id: 3, name: 'Business 3' },
-			// Add more businesses as needed
-		],
+		businesses: [],
 		};
 	},
 	computed: {
@@ -56,6 +57,22 @@ export default {
 		addBusiness() {
 			this.$router.push('/business/add');
 		},
+		async getAllBusinesses() {
+			try {
+				const response = await fetch('/api/business');
+				if (response.ok) {
+					const data = await response.json();
+					this.businesses = data.data;
+				}
+				throw new Error('Unable to pull business');
+				
+			} catch (error) {
+				console.error('Unable to pull business:', error);
+			}
+		}
 	},
+	mounted() {
+		this.getAllBusinesses();
+	}
 };
 </script>

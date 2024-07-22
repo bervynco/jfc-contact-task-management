@@ -64,7 +64,6 @@
                         throw new Error('Unable to pull a tag');
 					}
                     const data = await response.json();
-                    console.log(data);
                     this.name = data.name;
 					
 					

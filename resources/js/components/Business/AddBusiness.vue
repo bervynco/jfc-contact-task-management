@@ -5,11 +5,11 @@
             <form @submit.prevent="submitForm">
                 <div class="mb-4">
                     <label for="name" class="block text-sm font-medium text-gray-700">Business Name</label>
-                    <input type="text" v-model="businessName" id="name" class="mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-[#cf2e2e] w-full" required>
+                    <input type="text" v-model="name" id="name" class="mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-[#cf2e2e] w-full" required>
                 </div>
                 <div class="mb-4">
                     <label for="email" class="block text-sm font-medium text-gray-700">Contact Email</label>
-                    <input type="email" v-model="businessDescription" id="email" class="mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-[#cf2e2e] w-full" required>
+                    <input type="email" v-model="email" id="email" class="mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-[#cf2e2e] w-full" required>
                 </div>
                 <div class="flex space-x-4 mb-4">
                     <div class="w-1/2">
@@ -41,39 +41,92 @@
 </template>
   
 <script>
+    import { ref } from 'vue';
+    import { useRouter } from 'vue-router';
     export default {
-        data() {
+        setup() {
+            const router = useRouter();
+            const name = ref('');
+            const email = ref('');
+            const selectedTags = ref([]);
+            const selectedCategories = ref([]);
+
+            const submitForm = async () => {
+                const payload = {
+                    'name': name.value,
+                    'email': email.value,
+                    'tags': selectedTags.value,
+                    'categories': selectedCategories.value
+                }
+
+                 try {
+                    const response = await fetch('/api/business', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                        body: JSON.stringify(payload),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Unable to add business');
+                    }
+                    
+                    router.push('/business');
+                } catch (error) {
+                    console.error('There was an error adding a business!', error);
+                }
+            };
             return {
-                businessName: '',
-                businessDescription: '',
-                selectedTags: [],
-                selectedCategories: [],
-                tags: [
-                { id: 1, name: 'Technology' },
-                { id: 2, name: 'Health' },
-                { id: 3, name: 'Finance' },
-                // Add more tags as needed
-                ],
-                categories: [
-                { id: 1, name: 'Startup' },
-                { id: 2, name: 'Enterprise' },
-                { id: 3, name: 'Non-Profit' },
-                // Add more categories as needed
-                ],
+                name,
+                email,
+                selectedTags,
+                selectedCategories,
+                submitForm
             };
         },
+        data() {
+            return {
+                'tags': [],
+                'categories': []
+            }
+        },
         methods: {
-            submitForm() {
-                // Add your form submission logic here
-                console.log('Business Name:', this.businessName);
-                console.log('Business Description:', this.businessDescription);
-                console.log('Selected Tags:', this.selectedTags);
-                console.log('Selected Categories:', this.selectedCategories);
-                alert('Form submitted');
-            },
             cancel() {
                 this.$router.push('/business');
             },
+            async getTags() {
+                try {
+					const response = await fetch('/api/tag');
+					if (response.ok) {
+						const data = await response.json();
+						this.tags = data;
+					}
+					throw new Error('Unable to pull tags');
+					
+				} catch (error) {
+					console.error('Unable to pull tags:', error);
+				}
+            },
+
+            async getCategories() {
+                try {
+					const response = await fetch('/api/category');
+					if (response.ok) {
+						const data = await response.json();
+						this.categories = data;
+					}
+					throw new Error('Unable to pull categories');
+					
+				} catch (error) {
+					console.error('Unable to pull categories:', error);
+				}
+            }
         },
+        mounted() {
+			this.getCategories();
+            this.getTags();
+		},
     };
 </script>

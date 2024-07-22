@@ -60,12 +60,12 @@
             async getCategory() {
                 try {
 					const response = await fetch(`/api/category/${this.id}`);
-					if (response.ok) {
-						const data = await response.json();
-                        console.log(data);
-						this.name = data.name;
+					if (!response.ok) {
+                        throw new Error('Unable to pull a category');
 					}
-					throw new Error('Unable to pull a category');
+                    const data = await response.json();
+                    this.name = data.name;
+					
 					
 				} catch (error) {
 					console.error('Unable to pull a category:', error);

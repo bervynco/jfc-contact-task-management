@@ -16,5 +16,14 @@ class People extends Model
         'phone',
         'business_id'
     ];
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'categories_mapping');
+    }
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'tags_mapping');
+    }
     
 }

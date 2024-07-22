@@ -33,11 +33,7 @@
 		data() {
 			return {
 				searchQuery: '',
-				people: [
-					{ id: 1, name: 'Business 1' },
-					{ id: 2, name: 'Business 2' },
-					{ id: 3, name: 'Business 3' },
-				],
+				people: [],
 			};
 		},
 		computed: {
@@ -49,11 +45,24 @@
 		},
 		methods: {
 			addPeople() {
-				this.$router.push(`/people/add`);
+				this.$router.push('/people/add');
 			},
+			async getAllPeople() {
+				try {
+					const response = await fetch('/api/people');
+					if (!response.ok) {
+						throw new Error('Unable to pull people');
+					}
+					const data = await response.json();
+					this.businesses = data.data;
+					
+				} catch (error) {
+					console.error('Unable to pull people:', error);
+				}
+			}
 		},
 		mounted() {
-			
+			this.getAllPeople();
 		}
 	};
 </script>

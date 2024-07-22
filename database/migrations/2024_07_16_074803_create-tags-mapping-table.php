@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('tags_mapping', function (Blueprint $table) {
             $table->id();
-            $table->string('tags_id');
-            $table->integer('business_id');
-            $table->integer('people_id');
+            $table->unsignedBigInteger('tag_id');
+            $table->unsignedBigInteger('business_id');
+            $table->unsignedBigInteger('people_id');
             $table->timestamps();
         });
     }

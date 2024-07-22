@@ -6,14 +6,16 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-     /**
+    /**
      * Run the migrations.
      */
     public function up(): void
     {
         Schema::table('categories_mapping', function (Blueprint $table) {
-            $table->unsignedBigInteger('people_id')->nullable(true)->change();
-            $table->unsignedBigInteger('business_id')->nullable(true)->change();
+            // Recreate foreign key constraints
+            $table->foreign('business_id')->references('id')->on('businesses')->onDelete('cascade');
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
+            $table->foreign('people_id')->references('id')->on('people')->onDelete('cascade');
         });
     }
 
@@ -23,8 +25,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('categories_mapping', function (Blueprint $table) {
-            $table->unsignedBigInteger('people_id')->nullable(false)->change();
-            $table->unsignedBigInteger('business_id')->nullable(false)->change();
+            $table->dropForeign('business_id');
+            $table->dropForeign('category_id');
+            $table->dropForeign('people_id');
         });
     }
 };

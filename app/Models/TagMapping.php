@@ -10,7 +10,7 @@ class TagMapping extends Model
     use HasFactory;
     protected $table = 'tags_mapping';
     protected $fillable = [
-        'tags_id',
+        'tag_id',
         'business_id',
         'people_id'
     ];

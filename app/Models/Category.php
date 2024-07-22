@@ -12,4 +12,9 @@ class Category extends Model
     protected $fillable = [
         'name'
     ];
+
+    public function businesses()
+    {
+        return $this->belongsToMany(Business::class, 'categories_mapping');
+    }
 }

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Requests\CreateNewBusinessRequest;
 use App\Http\Requests\UpdateBusinessRequest;
 
+use App\Actions\Business\GetAllBusiness;
 use App\Actions\Business\CreateNewBusiness;
 use App\Actions\Business\UpdateBusiness;
 use App\Actions\TagMapping\CreateTagMapping;
@@ -20,13 +21,16 @@ class BusinessController extends Controller
     protected $createNewBusiness;
     protected $createCategoryMapping;
     protected $updateBusiness;
+    protected $getAllBusiness;
     public function __construct(
         CreateTagMapping $createTagMapping,
         CreateNewBusiness $createNewBusiness,
         CreateCategoryMapping $createCategoryMapping,
-        UpdateBusiness $updateBusiness
+        UpdateBusiness $updateBusiness,
+        GetAllBusiness $getAllBusiness
         )
     {
+        $this->getAllBusiness = $getAllBusiness;
         $this->createTagMapping = $createTagMapping;
         $this->createNewBusiness = $createNewBusiness;
         $this->createCategoryMapping = $createCategoryMapping;
@@ -35,10 +39,20 @@ class BusinessController extends Controller
     /**
      * Display a listing of the resource.
      */
+
     public function index()
     {
-        //
+        try {
+            $business = $this->getAllBusiness->handle();
+            return response()->json(['status' => 'success', 'data' => $business], 200);
+        } catch (HttpResponseException $e) {
+            return $e->getResponse();
+        } catch(\Exception $e) {
+            report($e);
+            return response()->json(['status' => 'error', 'message' => 'An error occurred while pulling all business'], 500);
+        }
     }
+    
 
     /**
      * Show the form for creating a new resource.
@@ -65,7 +79,7 @@ class BusinessController extends Controller
 
             $requestTags = array_map(function($tag) use ($businessId) {
                 return [
-                    'tags_id' => $tag,
+                    'tag_id' => $tag,
                     'business_id' => $businessId,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()

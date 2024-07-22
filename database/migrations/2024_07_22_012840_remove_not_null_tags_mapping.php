@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('categories_mapping', function (Blueprint $table) {
+        Schema::table('tags_mapping', function (Blueprint $table) {
             $table->unsignedBigInteger('people_id')->nullable(true)->change();
             $table->unsignedBigInteger('business_id')->nullable(true)->change();
         });
@@ -22,7 +22,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('categories_mapping', function (Blueprint $table) {
+        Schema::table('tags_mapping', function (Blueprint $table) {
             $table->unsignedBigInteger('people_id')->nullable(false)->change();
             $table->unsignedBigInteger('business_id')->nullable(false)->change();
         });

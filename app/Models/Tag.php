@@ -12,4 +12,9 @@ class Tag extends Model
     protected $fillable = [
         'name'
     ];
+
+    public function businesses()
+    {
+        return $this->belongsToMany(Business::class, 'tags_mapping');
+    }
 }

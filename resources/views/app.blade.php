@@ -7,7 +7,10 @@
         @vite('resources/css/app.css')
     </head>
     <body>
-        <div id="app"></div>
+        <div id="app">
+            <header-component></header-component>
+            <router-view></router-view>
+        </div>
         @vite('resources/js/app.js')
     </body>
 </html>

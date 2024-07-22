@@ -60,12 +60,13 @@
             async getTag() {
                 try {
 					const response = await fetch(`/api/tag/${this.id}`);
-					if (response.ok) {
-						const data = await response.json();
-                        console.log(data);
-						this.name = data.name;
+					if (!response.ok) {
+                        throw new Error('Unable to pull a tag');
 					}
-					throw new Error('Unable to pull a tag');
+                    const data = await response.json();
+                    console.log(data);
+                    this.name = data.name;
+					
 					
 				} catch (error) {
 					console.error('Unable to pull a tag:', error);

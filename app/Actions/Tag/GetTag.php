@@ -7,6 +7,6 @@ class GetTag
 {
     public function handle($id)
     {
-        return Tag::where('id', $id)->get();
+        return Tag::where('id', $id)->first();
     }
 }

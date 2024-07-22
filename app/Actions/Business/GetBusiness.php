@@ -7,6 +7,6 @@ class GetBusiness
 {
     public function handle($id)
     {
-        return Business::with(['categories', 'tags'])->where('id', $id)->get();
+        return Business::with(['categories', 'tags'])->where('id', $id)->first();
     }
 }

@@ -7,6 +7,6 @@ class GetCategory
 {
     public function handle($id)
     {
-        return Category::where('id', $id)->get();
+        return Category::where('id', $id)->first();
     }
 }

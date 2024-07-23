@@ -57,6 +57,9 @@ export default {
 		addBusiness() {
 			this.$router.push('/business/add');
 		},
+		editBusiness(id) {
+			this.$router.push(`/business/${id}/edit`);
+		},
 		async getAllBusinesses() {
 			try {
 				const response = await fetch('/api/business');

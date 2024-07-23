@@ -15,13 +15,17 @@ use App\Actions\Business\CreateNewBusiness;
 use App\Actions\Business\UpdateBusiness;
 use App\Actions\Business\DeleteBusiness;
 use App\Actions\TagMapping\CreateTagMapping;
+use App\Actions\TagMapping\DeleteTagMappingPerBusinessId;
 use App\Actions\CategoryMapping\CreateCategoryMapping;
+use App\Actions\CategoryMapping\DeleteCategoryMappingPerBusinessId;
 
 class BusinessController extends Controller
 {
     protected $createTagMapping;
+    protected $deleteTagMappingPerBusinessId;
     protected $createNewBusiness;
     protected $createCategoryMapping;
+    protected $deleteCategoryMappingPerBusinessId;
     protected $updateBusiness;
     protected $getAllBusiness;
     protected $getBusiness;
@@ -34,7 +38,9 @@ class BusinessController extends Controller
         UpdateBusiness $updateBusiness,
         GetAllBusiness $getAllBusiness,
         GetBusiness $getBusiness,
-        DeleteBusiness $deleteBusiness
+        DeleteBusiness $deleteBusiness,
+        DeleteCategoryMappingPerBusinessId $deleteCategoryMappingPerBusinessId,
+        DeleteTagMappingPerBusinessId $deleteTagMappingPerBusinessId
         )
     {
         $this->getAllBusiness = $getAllBusiness;
@@ -44,6 +50,8 @@ class BusinessController extends Controller
         $this->updateBusiness = $updateBusiness;
         $this->getBusiness = $getBusiness;
         $this->deleteBusiness = $deleteBusiness;
+        $this->deleteCategoryMappingPerBusinessId = $deleteCategoryMappingPerBusinessId;
+        $this->deleteTagMappingPerBusinessId = $deleteTagMappingPerBusinessId;
     }
     /**
      * Display a listing of the resource.
@@ -157,27 +165,28 @@ class BusinessController extends Controller
             unset($requestData['categories']);
             $business = $requestData;
             $this->updateBusiness->handle($business, $id);
+            $this->deleteCategoryMappingPerBusinessId->handle($id);
+            $this->deleteTagMappingPerBusinessId->handle($id);
+            $requestTags = array_map(function($tag) use ($id) {
+                return [
+                    'tag_id' => $tag,
+                    'business_id' => $id,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ];
+            }, $tags);
 
-            // $requestTags = array_map(function($tag) use ($businessId) {
-            //     return [
-            //         'tags_id' => $tag,
-            //         'business_id' => $businessId,
-            //         'created_at' => Carbon::now(),
-            //         'updated_at' => Carbon::now()
-            //     ];
-            // }, $tags);
-
-            // $requestCategories = array_map(function($category) use ($businessId) {
-            //     return [
-            //         'category_id' => $category,
-            //         'business_id' => $businessId,
-            //         'created_at' => Carbon::now(),
-            //         'updated_at' => Carbon::now()
-            //     ];
-            // }, $categories);
+            $requestCategories = array_map(function($category) use ($id) {
+                return [
+                    'category_id' => $category,
+                    'business_id' => $id,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ];
+            }, $categories);
             
-            // $this->createTagMapping->handle($requestTags);
-            // $this->createCategoryMapping->handle($requestCategories);
+            $this->createTagMapping->handle($requestTags);
+            $this->createCategoryMapping->handle($requestCategories);
 
             DB::commit();
             return response()->json(['status' => 'success', 'message' => 'Business updated successfully'], 200);

@@ -111,7 +111,15 @@ class PeopleController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $people = $this->getPeople->handle($id);
+            return response()->json(['status' => 'success', 'data' => $people], 200);
+        } catch (HttpResponseException $e) {
+            return $e->getResponse();
+        } catch(\Exception $e) {
+            report($e);
+            return response()->json(['status' => 'error', 'message' => 'An error occurred while pulling people'], 500);
+        }
     }
 
     /**

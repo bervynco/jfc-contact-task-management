@@ -27,4 +27,9 @@ class Business extends Model
     {
         return $this->hasMany(People::class, 'business_id');
     }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 }

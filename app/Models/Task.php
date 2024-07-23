@@ -14,4 +14,14 @@ class Task extends Model
         'business_id',
         'people_id'
     ];
+
+    public function business()
+    {
+        return $this->belongsTo(Business::class);
+    }
+    
+    public function people()
+    {
+        return $this->belongsTo(People::class, 'people_id');
+    }
 }

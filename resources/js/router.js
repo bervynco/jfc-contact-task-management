@@ -29,7 +29,8 @@ const routes = [
     },
     { 
         path: '/business/:id/edit',
-         component: EditBusiness 
+        component: EditBusiness,
+        props: true  
     },
     { 
         path: '/tasks', 

@@ -30,5 +30,10 @@ class People extends Model
     {
         return $this->belongsTo(Business::class, 'business_id');
     }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class, 'people_id');
+    }
     
 }

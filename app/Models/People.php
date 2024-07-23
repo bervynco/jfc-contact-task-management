@@ -25,5 +25,10 @@ class People extends Model
     {
         return $this->belongsToMany(Tag::class, 'tags_mapping');
     }
+
+    public function business()
+    {
+        return $this->belongsTo(Business::class, 'business_id');
+    }
     
 }

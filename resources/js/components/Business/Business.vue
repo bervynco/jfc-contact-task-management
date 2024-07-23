@@ -69,7 +69,26 @@ export default {
 			} catch (error) {
 				console.error('Unable to pull business:', error);
 			}
+		},
+		async deleteBusiness(id) {
+			try {
+				const response = await fetch(`/api/business/${id}`, {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json',
+				}});
+
+				if (!response.ok) {
+					throw new Error('Unable to delete business');
+				}
+				
+				this.getAllBusinesses();
+			} catch (error) {
+				console.error('There was an error deleting a business!', error);
+			}
 		}
+
 	},
 	mounted() {
 		this.getAllBusinesses();

@@ -13,6 +13,7 @@ use App\Actions\People\GetAllPeople;
 use App\Actions\People\GetPeople;
 use App\Actions\People\CreateNewPeople;
 use App\Actions\People\UpdatePeople;
+use App\Actions\People\DeletePeople;
 use App\Actions\TagMapping\CreateTagMapping;
 use App\Actions\CategoryMapping\CreateCategoryMapping;
 
@@ -24,6 +25,7 @@ class PeopleController extends Controller
     protected $updatePeople;
     protected $getAllPeople;
     protected $getPeople;
+    protected $deletePeople;
 
     public function __construct(
         CreateTagMapping $createTagMapping,
@@ -31,7 +33,8 @@ class PeopleController extends Controller
         CreateCategoryMapping $createCategoryMapping,
         UpdatePeople $updatePeople,
         GetAllPeople $getAllPeople,
-        GetPeople $getPeople
+        GetPeople $getPeople,
+        DeletePeople $deletePeople
         )
     {
         $this->getAllPeople = $getAllPeople;
@@ -40,6 +43,7 @@ class PeopleController extends Controller
         $this->createCategoryMapping = $createCategoryMapping;
         $this->updatePeople = $updatePeople;
         $this->getPeople = $getPeople;
+        $this->deletePeople = $deletePeople;
     }
 
     /**
@@ -131,6 +135,15 @@ class PeopleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            return response()->json([
+                'status' => 'success',
+                'data' => $this->deletePeople->handle($id)
+            ]);
+        } catch (HttpResponseException $e) {
+            return $e->getResponse();
+        } catch(\Exception $e) {
+            report($e);
+        }
     }
 }

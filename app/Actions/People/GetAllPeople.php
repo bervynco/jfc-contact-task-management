@@ -7,6 +7,6 @@ class GetAllPeople
 {
     public function handle()
     {
-        return People::with(['categories', 'tags'])->get();
+        return People::with(['business','tags'])->get();
     }
 }

@@ -17,8 +17,14 @@ class Business extends Model
     {
         return $this->belongsToMany(Category::class, 'categories_mapping');
     }
+
     public function tags()
     {
         return $this->belongsToMany(Tag::class, 'tags_mapping');
+    }
+
+    public function people()
+    {
+        return $this->hasMany(People::class, 'business_id');
     }
 }

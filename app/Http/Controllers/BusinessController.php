@@ -13,6 +13,7 @@ use App\Actions\Business\GetAllBusiness;
 use App\Actions\Business\GetBusiness;
 use App\Actions\Business\CreateNewBusiness;
 use App\Actions\Business\UpdateBusiness;
+use App\Actions\Business\DeleteBusiness;
 use App\Actions\TagMapping\CreateTagMapping;
 use App\Actions\CategoryMapping\CreateCategoryMapping;
 
@@ -24,13 +25,16 @@ class BusinessController extends Controller
     protected $updateBusiness;
     protected $getAllBusiness;
     protected $getBusiness;
+    protected $deleteBusiness;
+
     public function __construct(
         CreateTagMapping $createTagMapping,
         CreateNewBusiness $createNewBusiness,
         CreateCategoryMapping $createCategoryMapping,
         UpdateBusiness $updateBusiness,
         GetAllBusiness $getAllBusiness,
-        GetBusiness $getBusiness
+        GetBusiness $getBusiness,
+        DeleteBusiness $deleteBusiness
         )
     {
         $this->getAllBusiness = $getAllBusiness;
@@ -39,6 +43,7 @@ class BusinessController extends Controller
         $this->createCategoryMapping = $createCategoryMapping;
         $this->updateBusiness = $updateBusiness;
         $this->getBusiness = $getBusiness;
+        $this->deleteBusiness = $deleteBusiness;
     }
     /**
      * Display a listing of the resource.
@@ -191,6 +196,15 @@ class BusinessController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            return response()->json([
+                'status' => 'success',
+                'data' => $this->deleteBusiness->handle($id)
+            ]);
+        } catch (HttpResponseException $e) {
+            return $e->getResponse();
+        } catch(\Exception $e) {
+            report($e);
+        }
     }
 }

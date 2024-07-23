@@ -74,7 +74,7 @@
                     'lastname': lastname.value,
                     'email': email.value,
                     'phone': phone.value,
-                    'business': selectedBusiness.value,
+                    'business_id': selectedBusiness.value,
                     'tags': selectedTags.value
                 }
                 console.log(payload);

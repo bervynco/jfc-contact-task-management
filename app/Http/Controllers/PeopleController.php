@@ -69,9 +69,37 @@ class PeopleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateNewPeopleRequest $request)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $requestData = $request->validated();
+            $tags = $request['tags'] ?? [];
+            unset($requestData['tags']);
+            $people = $requestData;
+            $peopleId = $this->createNewPeople->handle($people);
+
+            $requestTags = array_map(function($tag) use ($peopleId) {
+                return [
+                    'tag_id' => $tag,
+                    'people_id' => $peopleId,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ];
+            }, $tags);
+
+            $this->createTagMapping->handle($requestTags);
+
+            DB::commit();
+            return response()->json(['status' => 'success', 'message' => 'People created successfully'], 200);
+        } catch (HttpResponseException $e) {
+            DB::rollBack();
+            return $e->getResponse();
+        } catch(\Exception $e) {
+            DB::rollBack();
+            report($e);
+            return response()->json(['status' => 'error', 'message' => 'An error occurred while creating the people'], 500);
+        }
     }
 
     /**

@@ -26,7 +26,7 @@
 						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ people.firstname }} {{ people.lastname }}</td>
 						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ people.email }}</td>
 						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ people.phone }}</td>
-						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ people.business.name }}</td>
+						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ people?.business?.name }}</td>
 						<td class="py-2 px-4 border-b border-gray-300 flex justify-end space-x-2">
 							<button @click="editPeople(people.id)" class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600 transition duration-150 ease-in-out">Edit</button>
 							<button @click="deletePeople(people.id)" class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 focus:outline-none focus:bg-red-600 transition duration-150 ease-in-out">Delete</button>
@@ -50,7 +50,8 @@
 		computed: {
 			filteredPeople() {
 				return this.people.filter(people =>
-					people.firstname.toLowerCase().includes(this.searchQuery.toLowerCase()) || people.lastname.toLowerCase().includes(this.searchQuery.toLowerCase())
+					people.firstname.toLowerCase().includes(this.searchQuery.toLowerCase()) || 
+					people.lastname.toLowerCase().includes(this.searchQuery.toLowerCase())
 				);
 			},
 		},

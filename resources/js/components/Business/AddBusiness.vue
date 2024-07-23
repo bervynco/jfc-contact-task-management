@@ -127,6 +127,6 @@
         mounted() {
 			this.getCategories();
             this.getTags();
-		},
+		}
     };
 </script>

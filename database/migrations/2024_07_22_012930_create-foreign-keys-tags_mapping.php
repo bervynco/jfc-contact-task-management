@@ -12,9 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tags_mapping', function (Blueprint $table) {
-            // Recreate foreign key constraints
-            $table->foreign('business_id')->references('id')->on('businesses')->onDelete('cascade');
-            $table->foreign('tag_id')->references('id')->on('categories')->onDelete('cascade');
+            $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');
             $table->foreign('people_id')->references('id')->on('people')->onDelete('cascade');
         });
     }

@@ -23,17 +23,17 @@
                 </div>
                 <div class="mb-4">
                     <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                    <input type="phone" v-model="phone" id="phone" class="mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-[#cf2e2e] w-full" required>
+                    <input type="number" v-model="phone" id="phone" class="mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-[#cf2e2e] w-full" required>
                 </div>
                 <div class="mb-4">
-                    <label for="phone" class="block text-sm font-medium text-gray-700">Business</label>
-                     <select v-model="selectedBusiness" id="business">
+                    <label for="business" class="block text-sm font-medium text-gray-700">Business</label>
+                    <select v-model="selectedBusiness" id="business" class="mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-[#cf2e2e] w-full">
                         <option v-for="business in businesses" :key="business.id" :value="business.id">
                             {{ business.name }}
                         </option>
                     </select>
                 </div>
-                <div class="flex space-x-4 mb-4" v-if="selectedTags">
+                <div class="flex space-x-4 mb-4">
                     <div class="w-1/2">
                         <label class="block text-sm font-medium text-gray-700">Tags</label>
                         <div class="mt-1">
@@ -65,15 +65,19 @@
             const email = ref('');
             const selectedTags = ref([]);
             const selectedBusiness = ref([]);
-
+            let businesses = ref([]);
+            let tags = ref([]);
+            
             const submitForm = async () => {
                 const payload = {
-                    'name': name.value,
+                    'firstname': firstname.value,
+                    'lastname': lastname.value,
                     'email': email.value,
-                    'tags': selectedTags.value,
-                    'categories': selectedCategories.value
+                    'phone': phone.value,
+                    'business': selectedBusiness.value,
+                    'tags': selectedTags.value
                 }
-
+                console.log(payload);
                  try {
                     const response = await fetch('/api/people', {
                     method: 'POST',
@@ -85,12 +89,12 @@
                     });
 
                     if (!response.ok) {
-                        throw new Error('Unable to add business');
+                        throw new Error('Unable to add people');
                     }
                     
                     router.push('/people');
                 } catch (error) {
-                    console.error('There was an error adding a business!', error);
+                    console.error('There was an error adding people!', error);
                 }
             };
 
@@ -100,8 +104,10 @@
 					if (!response.ok) {
                         throw new Error('Unable to pull business');
 					}
+                    
                     const data = await response.json();
-                    this.businesses = data.data;
+                    console.log(data.data);
+                    businesses.value = data.data;
 					
 					
 				} catch (error) {
@@ -112,11 +118,13 @@
             const getAllTags = async () => {
                 try {
 					const response = await fetch('/api/tag');
-					if (response.ok) {
-						const data = await response.json();
-						this.tags = data;
+					if (!response.ok) {
+                        throw new Error('Unable to pull tags');
 					}
-					throw new Error('Unable to pull tags');
+                    const data = await response.json();
+                    console.log(data);
+                    tags.value = data;
+					
 					
 				} catch (error) {
 					console.error('Unable to pull tags:', error);
@@ -134,14 +142,13 @@
                 email,
                 selectedTags,
                 selectedBusiness,
+                businesses,
+                tags,
                 submitForm
             };
         },
         data() {
-            return {
-                'tags': [],
-                'businesses': []
-            }
+            return {}
         },
         methods: {
             cancel() {

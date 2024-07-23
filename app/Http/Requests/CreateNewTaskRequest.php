@@ -23,8 +23,8 @@ class CreateNewTaskRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'people_id' =>'optional|integer',
-            'business_id' =>'optional|integer',
+            'people_id' =>'nullable',
+            'business_id' =>'nullable',
         ];
     }
 }

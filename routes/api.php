@@ -7,6 +7,7 @@ use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PeopleController;
+use App\Http\Controllers\TaskController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();

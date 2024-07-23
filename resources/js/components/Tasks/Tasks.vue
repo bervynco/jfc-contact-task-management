@@ -48,7 +48,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr v-for="task in filteredTasks2" :key="task.id">
+							<tr v-for="task in filteredTasks" :key="task.id">
 								<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ task.id }}</td>
 								<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ task.name }}</td>
 								<td class="py-2 px-4 border-b border-gray-300 text-sm"></td>
@@ -67,11 +67,7 @@
 		data() {
 			return {
 				searchQuery: '',
-				tasks: [
-					{ id: 1, name: 'Business 1' },
-					{ id: 2, name: 'Business 2' },
-					{ id: 3, name: 'Business 3' },
-				],
+				tasks: [],
 			};
 		},
 		computed: {
@@ -83,9 +79,24 @@
 		},
 		methods: {
 			addTask() {
-				// Add your logic to handle adding a new business here
-				alert('Add Business button clicked');
+				this.$router.push('/tasks/add');
 			},
+			async getAllTasks() {
+				try {
+					const response = await fetch('/api/tasks');
+					if (!response.ok) {
+						throw new Error('Unable to pull tasks');
+					}
+					const data = await response.json();
+					this.tasks = data.data;
+					
+				} catch (error) {
+					console.error('Unable to pull tasks:', error);
+				}
+			}
 		},
+		mounted() {
+			this.getAllTasks();
+		}
 	};
 </script>

@@ -4,6 +4,7 @@ import Business from './components/Business/Business.vue';
 import AddBusiness from './components/Business/AddBusiness.vue';
 import EditBusiness from './components/Business/EditBusiness.vue';
 import Tasks from './components/Tasks/Tasks.vue';
+import AddTask from './components/Tasks/AddTask.vue';
 import People from './components/People/People.vue';
 import AddPeople from './components/People/AddPeople.vue';
 import EditPeople from './components/People/EditPeople.vue';
@@ -35,6 +36,10 @@ const routes = [
     },
     { 
         path: '/tasks', 
+        component: Tasks 
+    },
+    { 
+        path: '/tasks/Add', 
         component: Tasks 
     },
     { 

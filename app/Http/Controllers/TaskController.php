@@ -32,7 +32,7 @@ class TaskController extends Controller
     public function index()
     {
         try {
-            $task = $this->getAllLTask->handle();
+            $task = $this->getAllTask->handle();
             return response()->json(['status' => 'success', 'data' => $task], 200);
         } catch (HttpResponseException $e) {
             return $e->getResponse();

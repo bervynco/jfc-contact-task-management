@@ -57,7 +57,7 @@ class PeopleController extends Controller
             return $e->getResponse();
         } catch(\Exception $e) {
             report($e);
-            return response()->json(['status' => 'error', 'message' => 'An error occurred while pulling all business'], 500);
+            return response()->json(['status' => 'error', 'message' => 'An error occurred while pulling all people'], 500);
         }
     }
 
@@ -154,14 +154,14 @@ class PeopleController extends Controller
             $this->createTagMapping->handle($requestTags);
 
             DB::commit();
-            return response()->json(['status' => 'success', 'message' => 'Business updated successfully'], 200);
+            return response()->json(['status' => 'success', 'message' => 'People updated successfully'], 200);
         } catch (HttpResponseException $e) {
             DB::rollBack();
             return $e->getResponse();
         } catch(\Exception $e) {
             DB::rollBack();
             report($e);
-            return response()->json(['status' => 'error', 'message' => 'An error occurred while updating the business'], 500);
+            return response()->json(['status' => 'error', 'message' => 'An error occurred while updating the people'], 500);
         }
     }
 

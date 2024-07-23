@@ -3,109 +3,107 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Mockery;
 use App\Http\Controllers\CategoryController;
 use App\Actions\Category\CreateNewCategory;
 use App\Actions\Category\UpdateCategory;
 use App\Actions\Category\DeleteCategory;
 use App\Actions\Category\GetAllCategory;
-use Illuminate\Http\JsonResponse;
+use App\Actions\Category\GetCategory;
 use App\Http\Requests\CreateCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\Request;
+use Mockery;
 
 class CategoryControllerTest extends TestCase
 {
-    protected $getAllCategory;
     protected $createNewCategory;
     protected $updateCategory;
     protected $deleteCategory;
+    protected $getAllCategory;
+    protected $getCategory;
+    protected $controller;
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
-        
-        $this->getAllCategory = Mockery::mock(GetAllCategory::class);
+
         $this->createNewCategory = Mockery::mock(CreateNewCategory::class);
         $this->updateCategory = Mockery::mock(UpdateCategory::class);
         $this->deleteCategory = Mockery::mock(DeleteCategory::class);
+        $this->getAllCategory = Mockery::mock(GetAllCategory::class);
+        $this->getCategory = Mockery::mock(GetCategory::class);
+
+        $this->controller = new CategoryController(
+            $this->createNewCategory,
+            $this->updateCategory,
+            $this->deleteCategory,
+            $this->getAllCategory,
+            $this->getCategory
+        );
     }
 
     public function testIndex()
     {
-        $this->getAllCategory->shouldReceive('handle')->once()->andReturn(['data']);
+        $categories = [['id' => 1, 'name' => 'Category 1'], ['id' => 2, 'name' => 'Category 2']];
 
-        $controller = new CategoryController(
-            $this->createNewCategory,
-            $this->updateCategory,
-            $this->deleteCategory,
-            $this->getAllCategory
-        );
+        $this->getAllCategory->shouldReceive('handle')->once()->andReturn($categories);
 
-        $response = $controller->index();
+        $response = $this->controller->index();
 
-        $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->status());
-        $this->assertEquals(json_encode(['data']), $response->getContent());
+        $this->assertEquals(json_encode($categories), $response->getContent());
     }
 
     public function testStore()
     {
         $request = Mockery::mock(CreateCategoryRequest::class);
-        $request->shouldReceive('validated')->once()->andReturn(['name' => 'New Category']);
+        $validated = ['name' => 'New Category'];
+        $request->shouldReceive('validated')->once()->andReturn($validated);
 
-        $this->createNewCategory->shouldReceive('handle')->once()->with(['name' => 'New Category'])->andReturn(['id' => 1, 'name' => 'New Category']);
+        $this->createNewCategory->shouldReceive('handle')->with($validated)->once()->andReturn($validated);
 
-        $controller = new CategoryController(
-            $this->createNewCategory,
-            $this->updateCategory,
-            $this->deleteCategory,
-            $this->getAllCategory
-        );
+        $response = $this->controller->store($request);
 
-        $response = $controller->store($request);
-
-        $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->status());
-        $this->assertEquals(json_encode(['id' => 1, 'name' => 'New Category']), $response->getContent());
+        $this->assertEquals(json_encode($validated), $response->getContent());
+    }
+
+    public function testShow()
+    {
+        $id = '1';
+        $category = ['id' => 1, 'name' => 'Category 1'];
+
+        $this->getCategory->shouldReceive('handle')->with($id)->once()->andReturn($category);
+
+        $response = $this->controller->show($id);
+
+        $this->assertEquals(200, $response->status());
+        $this->assertEquals(json_encode($category), $response->getContent());
     }
 
     public function testUpdate()
     {
+        $id = '1';
         $request = Mockery::mock(UpdateCategoryRequest::class);
-        $request->shouldReceive('validated')->once()->andReturn(['name' => 'Updated Category']);
+        $validated = ['name' => 'Updated Category'];
+        $request->shouldReceive('validated')->once()->andReturn($validated);
 
-        $this->updateCategory->shouldReceive('handle')->once()->with(['name' => 'Updated Category'], '1')->andReturn(['id' => 1, 'name' => 'Updated Category']);
+        $this->updateCategory->shouldReceive('handle')->with($validated, $id)->once()->andReturn($validated);
 
-        $controller = new CategoryController(
-            $this->createNewCategory,
-            $this->updateCategory,
-            $this->deleteCategory,
-            $this->getAllCategory
-        );
+        $response = $this->controller->update($request, $id);
 
-        $response = $controller->update($request, '1');
-
-        $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->status());
-        $this->assertEquals(json_encode(['status' => 'success', 'data' => ['id' => 1, 'name' => 'Updated Category']]), $response->getContent());
+        $this->assertEquals(json_encode(['status' => 'success', 'data' => $validated]), $response->getContent());
     }
-
 
     public function testDestroy()
     {
-        $this->deleteCategory->shouldReceive('handle')->once()->with('1')->andReturn(true);
+        $id = '1';
 
-        $controller = new CategoryController(
-            $this->createNewCategory,
-            $this->updateCategory,
-            $this->deleteCategory,
-            $this->getAllCategory
-        );
+        $this->deleteCategory->shouldReceive('handle')->with($id)->once()->andReturn(true);
 
-        $response = $controller->destroy('1');
+        $response = $this->controller->destroy($id);
 
-        $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->status());
         $this->assertEquals(json_encode(['status' => 'success', 'data' => true]), $response->getContent());
     }

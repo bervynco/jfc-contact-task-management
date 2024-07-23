@@ -8,11 +8,9 @@ use App\Actions\Tag\CreateNewTag;
 use App\Actions\Tag\UpdateTag;
 use App\Actions\Tag\DeleteTag;
 use App\Actions\Tag\GetAllTag;
-
+use App\Actions\Tag\GetTag;
 use App\Http\Requests\CreateTagRequest;
 use App\Http\Requests\UpdateTagRequest;
-
-use Illuminate\Http\Request;
 use Mockery;
 
 class TagControllerTest extends TestCase
@@ -21,6 +19,7 @@ class TagControllerTest extends TestCase
     protected $updateTag;
     protected $deleteTag;
     protected $getAllTag;
+    protected $getTag;
     protected $controller;
 
     public function setUp(): void
@@ -31,18 +30,20 @@ class TagControllerTest extends TestCase
         $this->updateTag = Mockery::mock(UpdateTag::class);
         $this->deleteTag = Mockery::mock(DeleteTag::class);
         $this->getAllTag = Mockery::mock(GetAllTag::class);
+        $this->getTag = Mockery::mock(GetTag::class);
 
         $this->controller = new TagController(
             $this->createNewTag,
             $this->updateTag,
             $this->deleteTag,
-            $this->getAllTag
+            $this->getAllTag,
+            $this->getTag
         );
     }
 
     public function testIndex()
     {
-        $tags = ['tag', 'another tag'];
+        $tags = [['id' => 1, 'name' => 'Tag 1'], ['id' => 2, 'name' => 'Tag 2']];
 
         $this->getAllTag->shouldReceive('handle')->once()->andReturn($tags);
 
@@ -55,7 +56,7 @@ class TagControllerTest extends TestCase
     public function testStore()
     {
         $request = Mockery::mock(CreateTagRequest::class);
-        $validated = ['name' => 'test tag'];
+        $validated = ['name' => 'New Tag'];
         $request->shouldReceive('validated')->once()->andReturn($validated);
 
         $this->createNewTag->shouldReceive('handle')->with($validated)->once()->andReturn($validated);
@@ -66,11 +67,24 @@ class TagControllerTest extends TestCase
         $this->assertEquals(json_encode($validated), $response->getContent());
     }
 
+    public function testShow()
+    {
+        $id = '1';
+        $tag = ['id' => 1, 'name' => 'Tag 1'];
+
+        $this->getTag->shouldReceive('handle')->with($id)->once()->andReturn($tag);
+
+        $response = $this->controller->show($id);
+
+        $this->assertEquals(200, $response->status());
+        $this->assertEquals(json_encode($tag), $response->getContent());
+    }
+
     public function testUpdate()
     {
         $id = '1';
         $request = Mockery::mock(UpdateTagRequest::class);
-        $validated = ['name' => 'updated test tag'];
+        $validated = ['name' => 'Updated Tag'];
         $request->shouldReceive('validated')->once()->andReturn($validated);
 
         $this->updateTag->shouldReceive('handle')->with($validated, $id)->once()->andReturn($validated);

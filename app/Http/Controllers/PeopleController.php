@@ -15,35 +15,34 @@ use App\Actions\People\CreateNewPeople;
 use App\Actions\People\UpdatePeople;
 use App\Actions\People\DeletePeople;
 use App\Actions\TagMapping\CreateTagMapping;
-use App\Actions\CategoryMapping\CreateCategoryMapping;
+use App\Actions\TagMapping\DeleteTagMappingPerPeopleId;
 
 class PeopleController extends Controller
 {
     protected $createTagMapping;
     protected $createNewPeople;
-    protected $createCategoryMapping;
     protected $updatePeople;
     protected $getAllPeople;
     protected $getPeople;
     protected $deletePeople;
-
+    protected $deleteTagMappingPerPeopleId;
     public function __construct(
         CreateTagMapping $createTagMapping,
         CreateNewPeople $createNewPeople,
-        CreateCategoryMapping $createCategoryMapping,
         UpdatePeople $updatePeople,
         GetAllPeople $getAllPeople,
         GetPeople $getPeople,
-        DeletePeople $deletePeople
+        DeletePeople $deletePeople,
+        DeleteTagMappingPerPeopleId $deleteTagMappingPerPeopleId
         )
     {
         $this->getAllPeople = $getAllPeople;
         $this->createTagMapping = $createTagMapping;
         $this->createNewPeople = $createNewPeople;
-        $this->createCategoryMapping = $createCategoryMapping;
         $this->updatePeople = $updatePeople;
         $this->getPeople = $getPeople;
         $this->deletePeople = $deletePeople;
+        $this->deleteTagMappingPerPeopleId = $deleteTagMappingPerPeopleId;
     }
 
     /**
@@ -133,9 +132,37 @@ class PeopleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdatePeopleRequest $request, string $id)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $requestData = $request->validated();
+            $tags = $request['tags'] ?? [];
+            unset($requestData['tags']);
+            $people = $requestData;
+            $this->updatePeople->handle($people, $id);
+            $this->deleteTagMappingPerPeopleId->handle($id);
+            $requestTags = array_map(function($tag) use ($id) {
+                return [
+                    'tag_id' => $tag,
+                    'people_id' => $id,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ];
+            }, $tags);
+            
+            $this->createTagMapping->handle($requestTags);
+
+            DB::commit();
+            return response()->json(['status' => 'success', 'message' => 'Business updated successfully'], 200);
+        } catch (HttpResponseException $e) {
+            DB::rollBack();
+            return $e->getResponse();
+        } catch(\Exception $e) {
+            DB::rollBack();
+            report($e);
+            return response()->json(['status' => 'error', 'message' => 'An error occurred while updating the business'], 500);
+        }
     }
 
     /**

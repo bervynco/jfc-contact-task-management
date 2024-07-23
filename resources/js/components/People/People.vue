@@ -73,23 +73,26 @@
 				}
 			},
 			async deletePeople(id) {
-			try {
-				const response = await fetch(`/api/people/${id}`, {
-				method: 'DELETE',
-				headers: {
-					'Content-Type': 'application/json',
-					'Accept': 'application/json',
-				}});
+				try {
+					const response = await fetch(`/api/people/${id}`, {
+					method: 'DELETE',
+					headers: {
+						'Content-Type': 'application/json',
+						'Accept': 'application/json',
+					}});
 
-				if (!response.ok) {
-					throw new Error('Unable to delete people');
+					if (!response.ok) {
+						throw new Error('Unable to delete people');
+					}
+					
+					this.getAllPeople();
+				} catch (error) {
+					console.error('There was an error deleting a people!', error);
 				}
-				
-				this.getAllPeople();
-			} catch (error) {
-				console.error('There was an error deleting a people!', error);
+			},
+			editPeople(id) {
+				this.$router.push(`/people/${id}/edit`);
 			}
-		}
 		},
 		mounted() {
 			this.getAllPeople();

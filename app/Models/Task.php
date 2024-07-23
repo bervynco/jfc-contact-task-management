@@ -12,7 +12,8 @@ class Task extends Model
     protected $fillable = [
         'name',
         'business_id',
-        'people_id'
+        'people_id',
+        'status'
     ];
 
     public function business()

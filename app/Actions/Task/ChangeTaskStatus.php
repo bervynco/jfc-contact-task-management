@@ -7,6 +7,6 @@ class ChangeTaskStatus
 {
     public function handle($taskData, $id)
     {
-        return Task::where('id', $id)->update(['status', $taskData['status']]);
+        return Task::where('id', $id)->update(['status' => $taskData['status']]);
     }
 }

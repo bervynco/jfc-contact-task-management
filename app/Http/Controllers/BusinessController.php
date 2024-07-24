@@ -69,15 +69,6 @@ class BusinessController extends Controller
             return response()->json(['status' => 'error', 'message' => 'An error occurred while pulling all business'], 500);
         }
     }
-    
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -141,14 +132,6 @@ class BusinessController extends Controller
             report($e);
             return response()->json(['status' => 'error', 'message' => 'An error occurred while pulling business'], 500);
         }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
     }
 
     /**

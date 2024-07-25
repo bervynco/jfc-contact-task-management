@@ -39,6 +39,7 @@
 	</div>
 </template>
 <script>
+	import { fetchWithBearerToken } from '../fetchWithBearerToken';
 	export default {
 		name: "People",
 		data() {
@@ -61,13 +62,8 @@
 			},
 			async getAllPeople() {
 				try {
-					const response = await fetch('/api/people');
-					if (!response.ok) {
-						throw new Error('Unable to pull people');
-					}
-					const data = await response.json();
-					this.people = data.data;
-					console.log(data);
+					const response = await fetchWithBearerToken('/api/people', "GET", {}, {});
+					this.people = response.data;
 					
 				} catch (error) {
 					console.error('Unable to pull people:', error);
@@ -75,17 +71,7 @@
 			},
 			async deletePeople(id) {
 				try {
-					const response = await fetch(`/api/people/${id}`, {
-					method: 'DELETE',
-					headers: {
-						'Content-Type': 'application/json',
-						'Accept': 'application/json',
-					}});
-
-					if (!response.ok) {
-						throw new Error('Unable to delete people');
-					}
-					
+					await fetchWithBearerToken(`/api/people/${id}`, "DELETE", {}, {})
 					this.getAllPeople();
 				} catch (error) {
 					console.error('There was an error deleting a people!', error);

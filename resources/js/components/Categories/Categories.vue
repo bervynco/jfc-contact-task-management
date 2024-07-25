@@ -33,6 +33,7 @@
 	</div>
 </template>
 <script>
+	import { fetchWithBearerToken } from '../fetchWithBearerToken';
 	export default {
 		
 		name: "Categories",
@@ -58,33 +59,18 @@
 			},
 			async getAllCategories() {
 				try {
-					const response = await fetch('/api/category');
-					if (response.ok) {
-						const data = await response.json();
-						this.categories = data;
-					}
-					throw new Error('Unable to pull categories');
-					
-				} catch (error) {
-					console.error('Unable to pull categories:', error);
-				}
+                    const response = await fetchWithBearerToken('/api/category', "GET", {}, {});
+					this.categories = response;
+                } catch (error) {
+                    console.error('There was an error getting categories!', error);
+                }
 			},
 			editCategory(id) {
 				this.$router.push(`/categories/${id}/edit`);
 			},
 			async deleteCategory(id) {
 				try {
-                    const response = await fetch(`/api/category/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    }});
-
-                    if (!response.ok) {
-                        throw new Error('Unable to delete category');
-                    }
-                    
+					await fetchWithBearerToken(`/api/category/${id}`, "DELETE", {}, {});                    
                     this.getAllCategories();
                 } catch (error) {
                     console.error('There was an error deleteing a category!', error);

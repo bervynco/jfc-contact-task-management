@@ -35,6 +35,7 @@
 <script>
     import { ref, onMounted } from 'vue';
     import { useRouter } from 'vue-router';
+    import { fetchWithBearerToken } from '../fetchWithBearerToken';
     export default {
         setup() {
             const router = useRouter();
@@ -49,21 +50,8 @@
                     'business_id': selectedBusiness.value,
                     'people_id': selectedPeople.value
                 }
-                console.log(payload);
-                 try {
-                    const response = await fetch('/api/tasks', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                        body: JSON.stringify(payload),
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Unable to add task');
-                    }
-                    
+                try {
+                    await fetchWithBearerToken('/api/tasks', "POST", payload, {});
                     router.push('/tasks');
                 } catch (error) {
                     console.error('There was an error adding task!', error);
@@ -71,30 +59,19 @@
             };
             const getAllBusinesses = async () => {
                 try {
+                    await fetchWithBearerToken('/api/business', "GET", {}, {});
 					const response = await fetch('/api/business');
-					if (!response.ok) {
-                        throw new Error('Unable to pull business');
-					}
-                    
-                    const data = await response.json();
-                    console.log(data.data);
-                    businesses.value = data.data;
+                    businesses.value = response.data;
 					
 					
 				} catch (error) {
-					console.error('Unable to pull business:', error);
+					console.error('Unable to pull business:', error); 
 				}
             }
             const getAllPeople = async () => {
                 try {
-					const response = await fetch('/api/people');
-					if (!response.ok) {
-                        throw new Error('Unable to pull people');
-					}
-                    
-                    const data = await response.json();
-                    console.log(data.data);
-                    people.value = data.data;
+                    const response = await fetchWithBearerToken('/api/people', "GET", {}, {});
+                    people.value = response.data;
 					
 					
 				} catch (error) {

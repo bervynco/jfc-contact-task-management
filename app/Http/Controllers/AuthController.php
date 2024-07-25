@@ -23,14 +23,14 @@ class AuthController extends Controller
             
             $token = $this->loginUser->handle($request->validated());
             if($token) {
-                return response()->json(['message' => 'Login successful!', 'user' => $token], 200);
+                return response()->json(['token' => $token]);
             }
             return response()->json(['message' => 'Invalid credentials'], 401);
         } catch (HttpResponseException $e) {
             return $e->getResponse();
         } catch(\Exception $e) {
             report($e);
-            return response()->json(['status' => 'error', 'message' => 'An error occurred while creating user'], 500);
+            return response()->json(['status' => 'error', 'message' => 'An error occurred while logging in user'], 500);
         }
     }
 }

@@ -39,6 +39,7 @@
 	</div>
 </template>
 <script>
+import { fetchWithBearerToken } from '../fetchWithBearerToken';
 export default {
 	data() {
 		return {
@@ -62,12 +63,8 @@ export default {
 		},
 		async getAllBusinesses() {
 			try {
-				const response = await fetch('/api/business');
-				if (response.ok) {
-					const data = await response.json();
-					this.businesses = data.data;
-				}
-				throw new Error('Unable to pull business');
+				const response = await fetchWithBearerToken('/api/business', "GET");
+				this.businesses = response.data;
 				
 			} catch (error) {
 				console.error('Unable to pull business:', error);

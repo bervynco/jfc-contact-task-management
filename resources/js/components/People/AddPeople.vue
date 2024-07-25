@@ -54,6 +54,7 @@
 </template>
   
 <script>
+    import { fetchWithBearerToken } from '../fetchWithBearerToken';
     import { ref, onMounted } from 'vue';
     import { useRouter } from 'vue-router';
     export default {
@@ -79,19 +80,7 @@
                 }
                 console.log(payload);
                  try {
-                    const response = await fetch('/api/people', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                        body: JSON.stringify(payload),
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Unable to add people');
-                    }
-                    
+                    await fetchWithBearerToken('/api/people', "POST", payload, {});
                     router.push('/people');
                 } catch (error) {
                     console.error('There was an error adding people!', error);
@@ -100,14 +89,8 @@
 
             const getAllBusinesses = async () => {
                 try {
-					const response = await fetch('/api/business');
-					if (!response.ok) {
-                        throw new Error('Unable to pull business');
-					}
-                    
-                    const data = await response.json();
-                    console.log(data.data);
-                    businesses.value = data.data;
+                    const response = await fetchWithBearerToken('/api/business', "GET", {}, {});
+                    businesses.value = response.data;
 					
 					
 				} catch (error) {
@@ -117,13 +100,8 @@
 
             const getAllTags = async () => {
                 try {
-					const response = await fetch('/api/tag');
-					if (!response.ok) {
-                        throw new Error('Unable to pull tags');
-					}
-                    const data = await response.json();
-                    console.log(data);
-                    tags.value = data;
+                    const response = await fetchWithBearerToken('/api/tag', "GET", {}, {});
+                    tags.value = response;
 					
 					
 				} catch (error) {

@@ -18,6 +18,7 @@
 </template>
   
 <script>
+    import { fetchWithBearerToken } from '../fetchWithBearerToken';
     export default {
         props: {
             id: {
@@ -36,22 +37,10 @@
                     'name': this.name
                 };
                 try {
-                    const response = await fetch(`/api/category/${this.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                        body: JSON.stringify(formData),
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Unable to add category');
-                    }
-                    
+                    const response = await fetchWithBearerToken(`/api/category/${this.id}`, "PUT", formData);
                     this.$router.push('/categories');
                 } catch (error) {
-                    console.error('There was an error adding a category!', error);
+                    console.error('There was an error updating a category!', error);
                 }
             },
             cancel() {
@@ -59,17 +48,11 @@
             },
             async getCategory() {
                 try {
-					const response = await fetch(`/api/category/${this.id}`);
-					if (!response.ok) {
-                        throw new Error('Unable to pull a category');
-					}
-                    const data = await response.json();
-                    this.name = data.name;
-					
-					
-				} catch (error) {
-					console.error('Unable to pull a category:', error);
-				}
+                    const response = await fetchWithBearerToken(`/api/category/${this.id}`, "GET", {}, {});
+                    this.name = response.name;
+                } catch (error) {
+                    console.error('There was an error getting a category!', error);
+                }
             }
         },
         mounted() {

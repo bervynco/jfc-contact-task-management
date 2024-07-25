@@ -43,6 +43,7 @@
 <script>
     import { ref } from 'vue';
     import { useRouter } from 'vue-router';
+    import { fetchWithBearerToken } from '../fetchWithBearerToken';
     export default {
         setup() {
             const router = useRouter();
@@ -58,21 +59,9 @@
                     'tags': selectedTags.value,
                     'categories': selectedCategories.value
                 }
-
+                
                  try {
-                    const response = await fetch('/api/business', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                        body: JSON.stringify(payload),
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Unable to add business');
-                    }
-                    
+                    await fetchWithBearerToken('/api/business', "POST", payload, {});
                     router.push('/business');
                 } catch (error) {
                     console.error('There was an error adding a business!', error);
@@ -98,12 +87,8 @@
             },
             async getTags() {
                 try {
-					const response = await fetch('/api/tag');
-					if (response.ok) {
-						const data = await response.json();
-						this.tags = data;
-					}
-					throw new Error('Unable to pull tags');
+                    const response = await fetchWithBearerToken('/api/tag', "GET", {}, {});
+                    this.tags = response;
 					
 				} catch (error) {
 					console.error('Unable to pull tags:', error);
@@ -112,15 +97,11 @@
 
             async getCategories() {
                 try {
-					const response = await fetch('/api/category');
-					if (response.ok) {
-						const data = await response.json();
-						this.categories = data;
-					}
-					throw new Error('Unable to pull categories');
+                    const response = await fetchWithBearerToken('/api/category', "GET", {}, {});
+                    this.categories = response;
 					
 				} catch (error) {
-					console.error('Unable to pull categories:', error);
+					console.error('Unable to pull tags:', error);
 				}
             }
         },

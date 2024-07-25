@@ -45,6 +45,7 @@
 	</div>
 </template>
 <script>
+	import { fetchWithBearerToken } from '../fetchWithBearerToken';
 	export default {
 		name: "Tasks",
 		data() {
@@ -66,12 +67,8 @@
 			},
 			async getAllTasks() {
 				try {
-					const response = await fetch('/api/tasks');
-					if (!response.ok) {
-						throw new Error('Unable to pull tasks');
-					}
-					const data = await response.json();
-					this.tasks = data.data;
+					const response = await fetchWithBearerToken('/api/tasks', "GET", {}, {});
+					this.tasks = response.data;
 					
 				} catch (error) {
 					console.error('Unable to pull tasks:', error);
@@ -82,18 +79,7 @@
 					'status': status
 				}
 				try {
-                    const response = await fetch(`/api/tasks/${id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                        body: JSON.stringify(payload),
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Unable to change status');
-                    }
+                    await fetchWithBearerToken(`/api/tasks/${id}`, "PUT", payload, {});
                     this.getAllTasks();
                 } catch (error) {
                     console.error('There was an error changing status!', error);

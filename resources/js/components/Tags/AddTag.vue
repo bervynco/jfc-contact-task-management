@@ -18,6 +18,7 @@
 </template>
   
 <script>
+    import { fetchWithBearerToken } from '../fetchWithBearerToken';
     export default {
         data() {
             return {
@@ -30,19 +31,7 @@
                     'name': this.name
                 };
                 try {
-                    const response = await fetch('/api/tag', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                        body: JSON.stringify(formData),
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Unable to add tag');
-                    }
-                    
+                    await fetchWithBearerToken('/api/tag', "POST", formData, {})
                     this.$router.push('/tags');
                 } catch (error) {
                     console.error('There was an error adding a tag!', error);

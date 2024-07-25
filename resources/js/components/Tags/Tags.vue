@@ -33,6 +33,7 @@
 	</div>
 </template>
 <script>
+	import { fetchWithBearerToken } from '../fetchWithBearerToken';
 	export default {
 		name: "Tags",
 		data() {
@@ -57,13 +58,7 @@
 			},
 			async getAllTags() {
 				try {
-					const response = await fetch('/api/tag');
-					if (response.ok) {
-						const data = await response.json();
-						this.tags = data;
-					}
-					throw new Error('Unable to pull tags');
-					
+					this.tags = await fetchWithBearerToken('/api/tag', "GET", {}, {});
 				} catch (error) {
 					console.error('Unable to pull tags:', error);
 				}
@@ -73,17 +68,7 @@
 			},
 			async deleteTag(id) {
 				try {
-                    const response = await fetch(`/api/tag/${id}`, {
-						method: 'DELETE',
-						headers: {
-							'Content-Type': 'application/json',
-							'Accept': 'application/json',
-					}});
-
-                    if (!response.ok) {
-                        throw new Error('Unable to delete tag');
-                    }
-                    
+					await fetchWithBearerToken(`/api/tag/${id}`, "DELETE", {}, {});                    
                     this.getAllTags();
                 } catch (error) {
                     console.error('There was an error deleteing a tag!', error);

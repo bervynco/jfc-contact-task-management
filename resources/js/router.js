@@ -15,6 +15,7 @@ import Categories from './components/Categories/Categories.vue';
 import AddCategory from './components/Categories/AddCategory.vue';
 import EditCategory from './components/Categories/EditCategory.vue';
 import Login from './components/Login.vue';
+import Register from './components/Register.vue';
 
 const routes = [
     { 
@@ -22,64 +23,82 @@ const routes = [
         component: Login 
     },
     { 
+        path: '/register', 
+        component: Register 
+    },
+    { 
         path: '/business', 
-        component: Business 
+        component: Business,
+        meta: { requiresAuth: true } 
     },
     { 
         path: '/business/add', 
-        component: AddBusiness 
+        component: AddBusiness,
+        meta: { requiresAuth: true } 
     },
     { 
         path: '/business/:id/edit',
         component: EditBusiness,
-        props: true  
+        props: true,
+        meta: { requiresAuth: true }  
     },
     { 
         path: '/tasks', 
-        component: Tasks 
+        component: Tasks,
+        meta: { requiresAuth: true } 
     },
     { 
         path: '/tasks/add', 
-        component: AddTask 
+        component: AddTask,
+        meta: { requiresAuth: true } 
     },
     { 
         path: '/people', 
-        component: People 
+        component: People,
+        meta: { requiresAuth: true } 
     },
     { 
         path: '/people/add', 
-        component: AddPeople 
+        component: AddPeople,
+        meta: { requiresAuth: true } 
     },
     { 
         path: '/people/:id/edit', 
         component: EditPeople,
-        props: true 
+        props: true,
+        meta: { requiresAuth: true } 
     },
     { 
         path: '/tags', 
-        component: Tags 
+        component: Tags,
+        meta: { requiresAuth: true } 
     },
     { 
         path: '/tags/add', 
-        component: AddTag 
+        component: AddTag,
+        meta: { requiresAuth: true } 
     },
     { 
         path: '/tags/:id/edit',
         component: EditTag,
-        props: true 
+        props: true,
+        meta: { requiresAuth: true } 
     },
     { 
         path: '/categories', 
-        component: Categories 
+        component: Categories,
+        meta: { requiresAuth: true } 
     },
     { 
         path: '/categories/add', 
-        component: AddCategory 
+        component: AddCategory,
+        meta: { requiresAuth: true } 
     },
     { 
         path: '/categories/:id/edit',
         component: EditCategory,
-        props: true 
+        props: true,
+        meta: { requiresAuth: true } 
     },
     { 
         path: '/login', 
@@ -90,6 +109,25 @@ const routes = [
 const router = createRouter({
     history: createWebHistory(),
     routes
+});
+
+// Add a navigation guard
+router.beforeEach((to, from, next) => {
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+        // this route requires auth, check if logged in
+        // if not, redirect to login page.
+        const token = localStorage.getItem('jfc-token');
+        if (!token) {
+            next({
+                path: '/login',
+                query: { redirect: to.fullPath }
+            });
+        } else {
+            next();
+        }
+    } else {
+        next();
+    }
 });
 
 export default router;

@@ -1,24 +1,37 @@
 <template>
     <nav :style="{ backgroundColor: navbarColor }" class="navbar">
         <div class="container">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="#">Tasks</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">People</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Business</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Tags</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Categories</a></li>
+            <ul class="navbar-nav flex space-x-4">
+                <li class="nav-item relative">
+                    <router-link class="nav-link" to="/tasks">Tasks</router-link>
+                </li>
+                <li class="nav-item relative">
+                    <router-link class="nav-link" to="/categories">Categories</router-link>
+                </li>
+                <li class="nav-item relative">
+                    <router-link class="nav-link" to="/people">People</router-link>
+                </li>
+                <li class="nav-item relative">
+                    <router-link class="nav-link" to="/business">Business</router-link>
+                </li>
+                <li class="nav-item relative">
+                    <router-link class="nav-link" to="/tags">Tags</router-link>
+                </li>
             </ul>
         </div>
     </nav>
 </template>
-
 <script>
 export default {
+    name: "Header",
     data() {
         return {
             navbarColor: '#cf2e2e'
         };
     },
+    methods: {
+       
+    }
 };
 </script>
 <style scoped>
@@ -41,10 +54,6 @@ export default {
         gap: 20px;
     }
 
-    .nav-item {
-        display: inline;
-    }
-
     .nav-link {
         color: white;
         text-decoration: none;
@@ -52,6 +61,9 @@ export default {
     }
 
     .nav-link:hover {
-        color: #ffd700; /* Gold */
+        color: #ffd700;
+    }
+    .nav-item {
+        position: relative;
     }
 </style>

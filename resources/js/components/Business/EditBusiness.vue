@@ -43,6 +43,7 @@
 <script>
     import { ref, onMounted } from 'vue';
     import { useRouter } from 'vue-router';
+    import { fetchWithBearerToken } from '../fetchWithBearerToken';
     export default {
         props: {
             id: {
@@ -69,19 +70,7 @@
                 }
 
                  try {
-                    const response = await fetch(`/api/business/${props.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                        body: JSON.stringify(payload),
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Unable to add business');
-                    }
-                    
+                    await fetchWithBearerToken(`/api/business/${props.id}`, "PUT", payload, {});
                     router.push('/business');
                 } catch (error) {
                     console.error('There was an error adding a business!', error);
@@ -98,13 +87,8 @@
 
             const getBusiness = async () => {
                  try {
-                    const response = await fetch(`/api/business/${props.id}`)
-
-                    if (!response.ok) {
-                        throw new Error('Unable to get business data');
-                    }
-                    const data = await response.json();
-                    reinitializeForm(data.data);
+                    const response = await fetchWithBearerToken(`/api/business/${props.id}`, "GET", {}, {});
+                    reinitializeForm(response.data);
                 } catch (error) {
                     console.error('There was an error pulling a business!', error);
                 }
@@ -112,12 +96,8 @@
 
             const getAllTags = async () => {
                 try {
-					const response = await fetch('/api/tag');
-					if (!response.ok) {
-                        throw new Error('Unable to pull tags');
-					}
-                    const data = await response.json();
-                    tags.value = data;
+					const response = await fetchWithBearerToken('/api/tag', "GET", {}, {});
+                    tags.value = response;
 					
 					
 				} catch (error) {
@@ -127,12 +107,8 @@
 
             const getAllCategories = async () => {
                 try {
-					const response = await fetch('/api/category');
-					if (!response.ok) {
-                        throw new Error('Unable to pull categories');
-					}
-                    const data = await response.json();
-                    categories.value = data;
+					const response = await fetchWithBearerToken('/api/category', "GET", {}, {});
+                    categories.value = response;
 					
 				} catch (error) {
 					console.error('Unable to pull categories:', error);

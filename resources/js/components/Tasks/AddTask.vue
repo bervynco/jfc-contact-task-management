@@ -59,8 +59,7 @@
             };
             const getAllBusinesses = async () => {
                 try {
-                    await fetchWithBearerToken('/api/business', "GET", {}, {});
-					const response = await fetch('/api/business');
+                    const response = await fetchWithBearerToken('/api/business', "GET", {}, {});
                     businesses.value = response.data;
 					
 					

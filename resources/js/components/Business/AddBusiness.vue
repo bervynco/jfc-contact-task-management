@@ -60,7 +60,7 @@
                     'categories': selectedCategories.value
                 }
                 
-                 try {
+                try {
                     await fetchWithBearerToken('/api/business', "POST", payload, {});
                     router.push('/business');
                 } catch (error) {

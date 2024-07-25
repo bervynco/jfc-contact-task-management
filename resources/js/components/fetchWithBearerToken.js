@@ -16,7 +16,6 @@ export async function fetchWithBearerToken(url, method = 'GET', payload = {}, op
       ...options,
     };
   
-    // Add the payload to the request body for POST and PUT methods
     if (method === 'POST' || method === 'PUT') {
         fetchOptions.body = JSON.stringify(payload);
     }

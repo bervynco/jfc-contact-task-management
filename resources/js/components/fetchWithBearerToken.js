@@ -7,13 +7,13 @@ export async function fetchWithBearerToken(url, method = 'GET', payload = {}, op
     };
   
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+      	headers['Authorization'] = `Bearer ${token}`;
     }
   
     const fetchOptions = {
-      method,
-      headers,
-      ...options,
+		method,
+		headers,
+		...options,
     };
   
     if (method === 'POST' || method === 'PUT') {
@@ -21,7 +21,10 @@ export async function fetchWithBearerToken(url, method = 'GET', payload = {}, op
     }
   
     const response = await fetch(url, fetchOptions);
-  
+	if(response.status === 401) {
+		localStorage.removeItem("jfc-token");
+		window.location.href = "/login";
+	}
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);
     }

@@ -17,6 +17,9 @@
                 <li class="nav-item relative">
                     <router-link class="nav-link" to="/tags">Tags</router-link>
                 </li>
+                <li class="nav-item relative cursor-pointer">
+                    <span class="nav-link" @click="logout">Logout</span>
+                </li>
             </ul>
         </div>
     </nav>
@@ -30,7 +33,10 @@ export default {
         };
     },
     methods: {
-       
+       logout() {
+            this.$store.dispatch('logout');
+            this.$router.push("/login");
+       }
     }
 };
 </script>

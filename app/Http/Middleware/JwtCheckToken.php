@@ -18,21 +18,18 @@ class JwtCheckToken
     public function handle(Request $request, Closure $next): Response
     {
         try {
-            // Check for token in the Authorization header
             $token = $request->bearerToken();
             
             if (!$token) {
                 return response()->json(['error' => 'Token not available'], 401);
             }
 
-            // Verify the token
             $user = JWTAuth::setToken($token)->authenticate();
             
             if (!$user) {
                 return response()->json(['error' => 'Invalid token'], 401);
             }
 
-            // Proceed with the request
             return $next($request);
 
         } catch (JWTException $e) {

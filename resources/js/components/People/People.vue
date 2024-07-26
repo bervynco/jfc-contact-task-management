@@ -17,6 +17,7 @@
 					<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600">Email</th>
 					<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600">Phone</th>
 					<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600">Business</th>
+					<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600">Tags</th>
 					<th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm text-gray-600"></th>
 					</tr>
 				</thead>
@@ -27,6 +28,12 @@
 						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ people.email }}</td>
 						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ people.phone }}</td>
 						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ people?.business?.name }}</td>
+						<td class="py-2 px-4 border-b border-gray-300 text-sm">
+							<div
+								class="relative grid select-none items-center whitespace-nowrap rounded-lg border border-gray-600 py-1.5 px-3 font-sans text-xs font-bold uppercase text-gray-600" v-for="tag in people.tags" :key="tag.id">
+								<span class="">{{ tag.name }}</span>
+							</div>
+						</td>
 						<td class="py-2 px-4 border-b border-gray-300 flex justify-end space-x-2">
 							<button @click="editPeople(people.id)" class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600 transition duration-150 ease-in-out">Edit</button>
 							<button @click="deletePeople(people.id)" class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 focus:outline-none focus:bg-red-600 transition duration-150 ease-in-out">Delete</button>

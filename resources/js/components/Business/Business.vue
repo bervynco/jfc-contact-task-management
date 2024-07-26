@@ -25,8 +25,18 @@
 						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ business.id }}</td>
 						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ business.name }}</td>
 						<td class="py-2 px-4 border-b border-gray-300 text-sm">{{ business.email }}</td>
-						<td class="py-2 px-4 border-b border-gray-300 text-sm"></td>
-						<td class="py-2 px-4 border-b border-gray-300 text-sm"></td>
+						<td class="py-2 px-4 border-b border-gray-300 text-sm">
+							<div
+								class="relative grid select-none items-center whitespace-nowrap rounded-lg border border-gray-600 py-1.5 px-3 font-sans text-xs font-bold uppercase text-gray-600" v-for="tag in business.tags" :key="tag.id">
+								<span class="">{{ tag.name }}</span>
+							</div>
+						</td>
+						<td class="py-2 px-4 border-b border-gray-300 text-sm">
+							<div
+								class="relative grid select-none items-center whitespace-nowrap rounded-lg border border-gray-600 py-1.5 px-3 font-sans text-xs font-bold uppercase text-gray-600" v-for="category in business.categories">
+								<span class="">{{ category.name }}</span>
+							</div>
+						</td>
 						<td class="py-2 px-4 border-b border-gray-300 flex justify-end space-x-2">
 							<button @click="editBusiness(business.id)" class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600 transition duration-150 ease-in-out">Edit</button>
 							<button @click="deleteBusiness(business.id)" class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 focus:outline-none focus:bg-red-600 transition duration-150 ease-in-out">Delete</button>
